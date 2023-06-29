@@ -345,6 +345,7 @@ class Tomasulo {
           }
           todo.judge = my_guess;
           todo.commit_type = Branch;
+          todo.dest = cur_pc + todo.op.imm;
           new_rs.Qj = GetDependency(todo.op.rs1), new_rs.Qk = GetDependency(todo.op.rs2);
           if (new_rs.Qj == -1) {
             new_rs.Vj = reg[todo.op.rs1];
@@ -474,7 +475,8 @@ class Tomasulo {
       exit(0);
     }
     // std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
-//    std::cout << std::string(todo.op) << '\n';
+    // std::cout << std::string(todo.op) << '\n';
+    // std::cout << todo << '\n';
 //    for (int i = 0; i < 32; ++i) {
 //      std::cout << i << ' ' << reg_nxt[i] << '\n';
 //    }
