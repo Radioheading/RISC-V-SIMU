@@ -80,18 +80,24 @@ class Tomasulo {
   }
 
   void ReadMemory(longType _value, longType _dest) {
+    // std::cout << "read from memory\n";
     // std::cout << "dest: " << _dest << ", _value: " << _value << '\n';
     WriteReg(_dest, _value);
   }
 
   void WriteMemory(longType _value, const Operation &ins) {
     // introduction: after three cycles, we can write certain value to certain address in the memory
+    // std::cout << "write to memory\n";
+    // std::cout << std::string(ins) << '\n';
     switch (ins.type) {
       case SB : write_to_memory(_value, 1, memory, extend(reg[ins.rs2], 7));
+        // std::cout << "dest: " << _value << ", _value: " << extend(reg[ins.rs2], 7) << '\n';
         break;
       case SH : write_to_memory(_value, 2, memory, extend(reg[ins.rs2], 15));
+        // std::cout << "dest: " << _value << ", _value: " << extend(reg[ins.rs2], 15) << '\n';
         break;
       case SW : write_to_memory(_value, 4, memory, extend(reg[ins.rs2], 31));
+        // std::cout << "dest: " << _value << ", _value: " << extend(reg[ins.rs2], 31) << '\n';
         break;
     }
   }
@@ -126,15 +132,21 @@ class Tomasulo {
   }
 
   void GetCommand() {
+//    std::cout << "-----------------reading!\n";
+//    std::cout << InsQueue.isFull() << '\n';
+//    std::cout << ins_stall << '\n';
+//    std::cout << JALR_dependency << '\n';
+//    std::cout << cur_pc << '\n';
     if (!InsQueue.isFull() && !ins_stall && JALR_dependency == -1) {
-      // std::cout << "reading!\n";
       // std::cout << "we're at: " << std::hex << cur_pc << '/' << std::dec << cur_pc << '\n';
       longType cmd = memory[cur_pc] | memory[cur_pc + 1] << 8 | memory[cur_pc + 2] << 16 | memory[cur_pc + 3] << 24;
+      // std::cout << std::string(Parse(cmd)) << '\n';
       InsQueue.enQueue(Parse(cmd));
       // InsQueue.deQueue(); // only for test
     }
   }
   void Issue() {
+    // std::cout << "------------------Issuing!\n";
     if (JALR_dependency != -1 || InsQueue.empty()) { // stalled due to JALR
       return;
     }
@@ -420,9 +432,9 @@ class Tomasulo {
     reorder_buffer_info todo = ROB.data.head();
     // std::cout << todo << '\n';
     if (ROB.data.empty() || !ROB.data.head().ready) {
-       // std::cout << "blocked!\n";
-       // std::cout << std::string(ROB.data.head().op) << '\n';
-       // std::cout << ROB.data.head() << '\n';
+      // std::cout << "blocked!\n";
+      // std::cout << std::string(ROB.data.head().op) << '\n';
+      // std::cout << ROB.data.head() << '\n';
 //       for (int i = 0; i < 32; ++i) {
 //         std::cout << i << ' ' << depend[i] << '\n';
 //       }
@@ -459,7 +471,7 @@ class Tomasulo {
       my_predict.flush(todo.pc, real);
       if (guess != real) {
         // std::cout << "wrong guess!\n";
-        ROB.clear(), RS.clear(), LSB.clear();
+        ROB.clear(), RS.clear(), LSB.clear(), InsQueue.clear(), ins_stall = false;
         EraseDependency();
         JALR_dependency = -1;
         if (real) {
@@ -474,8 +486,9 @@ class Tomasulo {
       std::cout << int(reg[10] & 255u) << '\n';
       exit(0);
     }
-    // std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
-    // std::cout << std::string(todo.op) << '\n';
+    // std::cout << "---------------committing\n";
+//    std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
+//    std::cout << std::string(todo.op) << '\n';
     // std::cout << todo << '\n';
 //    for (int i = 0; i < 32; ++i) {
 //      std::cout << i << ' ' << reg_nxt[i] << '\n';
@@ -509,7 +522,7 @@ class Tomasulo {
   }
 
   void run() {
-    while (main_clock < 1000) {
+    while (main_clock < 2000) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
       // ROB.print(), RS.print(), LSB.print();

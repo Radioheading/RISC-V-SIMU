@@ -76,6 +76,9 @@ class ReOrderBuffer {
   }
 
   void insert(const reorder_buffer_info &to_insert) {
+//    std::cout << "Issuing!\n";
+//    std::cout << std::string(to_insert.op) << '\n';
+//    std::cout << to_insert << '\n';
     data_next.enQueue(to_insert);
   }
 
