@@ -489,7 +489,6 @@ class Tomasulo {
     // std::cout << "---------------committing\n";
 //    std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
 //    std::cout << std::string(todo.op) << '\n';
-    // std::cout << todo << '\n';
 //    for (int i = 0; i < 32; ++i) {
 //      std::cout << i << ' ' << reg_nxt[i] << '\n';
 //    }
@@ -522,7 +521,7 @@ class Tomasulo {
   }
 
   void run() {
-    while (main_clock < 2000) {
+    while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
       // ROB.print(), RS.print(), LSB.print();
