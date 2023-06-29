@@ -7,12 +7,11 @@
 #include "src/program.hpp"
 
 int main() {
-  freopen("testcases/array_test1.data", "r", stdin);
-  freopen("lxy.out", "w", stdout);
+  // freopen("testcases/array_test1.data", "r", stdin);
+  // freopen("lxy.out", "w", stdout);
   Tomasulo CPU;
   CPU.LoadCommand();
   CPU.run();
-  fclose(stdin);
-  return 0;
+  // fclose(stdin);
   return 0;
 }
