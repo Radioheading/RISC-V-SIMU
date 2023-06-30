@@ -535,7 +535,7 @@ class Tomasulo {
 
   void run() {
     int order[6] = {3, 5, 2, 4, 0, 1};
-    while (main_clock < 2000) {
+    while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
       for (int i = 0; i < 6; ++i) {
