@@ -78,6 +78,7 @@ class Tomasulo {
   void EraseDependency() {
     for (int i = 0; i < 32; ++i) {
       depend_nxt[i] = -1;
+      depend[i] = -1;
     }
   }
 
@@ -145,7 +146,7 @@ class Tomasulo {
 //      }
 //      std::cout << "we're at: " << std::hex << cur_pc << '/' << std::dec << cur_pc << '\n';
       longType cmd = memory[cur_pc] | memory[cur_pc + 1] << 8 | memory[cur_pc + 2] << 16 | memory[cur_pc + 3] << 24;
-      // std::cout << std::string(Parse(cmd)) << '\n';
+//      std::cout << std::string(Parse(cmd)) << '\n';
       InsQueue.enQueue(Parse(cmd));
       // InsQueue.deQueue(); // only for test
     }
@@ -306,6 +307,7 @@ class Tomasulo {
           new_rs.type = todo.op.type;
           new_rs.A = todo.op.imm;
           RS.insert(new_rs);
+//          std::cout << new_rs << '\n';
           InsQueue.deQueue();
           ins_stall = false, cur_pc += 4;
           break;
@@ -439,7 +441,6 @@ class Tomasulo {
   void Commit() {
     // std::cout << "----------" << main_clock << "----------\n";
     // std::cout << "-----------committing!" << " considering" << ROB.data.head_id() << "---------\n";
-    reorder_buffer_info todo = ROB.data.head();
     // std::cout << todo << '\n';
     if (ROB.data.empty() || !ROB.data.head().ready) {
       // std::cout << "blocked!\n";
@@ -450,6 +451,7 @@ class Tomasulo {
 //       }
       return;
     }
+    reorder_buffer_info todo = ROB.data.head();
     // std::cout << "can commit the head" << '\n';
     if (todo.commit_type == ChangeReg) {
       // std::cout << "change register!\n";
@@ -496,7 +498,7 @@ class Tomasulo {
       std::cout << int(reg[10] & 255u) << '\n';
       exit(0);
     }
-    // std::cout << "---------------committing\n";
+//    std::cout << "---------------committing\n";
 //    std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
 //    std::cout << std::string(todo.op) << '\n';
 //    std::cout << todo << '\n';
@@ -532,12 +534,10 @@ class Tomasulo {
   }
 
   void run() {
-    int order[6] = {0, 1, 2, 3, 4, 5};
-    while (true) {
+    int order[6] = {3, 5, 2, 4, 0, 1};
+    while (main_clock < 2000) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
-      // ROB.print(), RS.print(), LSB.print();
-      std::shuffle(order, order + 6, std::mt19937(std::random_device()()));
       for (int i = 0; i < 6; ++i) {
         switch (order[i]) {
           case 0: GetCommand();
