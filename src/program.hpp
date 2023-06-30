@@ -1,9 +1,11 @@
 #ifndef PROGRAM_HPP_
 #define PROGRAM_HPP_
 
+#include <random>
 #include <string>
 #include "utils.hpp"
 #include "system.hpp"
+#include <algorithm>
 #include "../lib/prediction.hpp"
 
 class Tomasulo {
@@ -530,18 +532,30 @@ class Tomasulo {
   }
 
   void run() {
+    int order[6] = {0, 1, 2, 3, 4, 5};
     while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
       // ROB.print(), RS.print(), LSB.print();
-      GetCommand(); // maybe no problem
-      Issue(); // demand big change
-      Execute(); // maybe no problem
-      Fetch(); // maybe no problem
-      Update(); // maybe no problem
+      std::shuffle(order, order + 6, std::mt19937(std::random_device()()));
+      for (int i = 0; i < 6; ++i) {
+        switch (order[i]) {
+          case 0: GetCommand();
+            break;
+          case 1: Issue();
+            break;
+          case 2: Fetch();
+            break;
+          case 3: Update();
+            break;
+          case 4: Commit();
+            break;
+          case 5: Execute();
+            break;
+        }
+      }
+      Flush();
       ++main_clock;
-      Commit(); // demand change
-      Flush(); // maybe no problem
     }
   }
 };
