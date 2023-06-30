@@ -543,6 +543,7 @@ class Tomasulo {
     while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
+      std::random_shuffle(order, order + 6);
       for (int i = 0; i < 6; ++i) {
         switch (order[i]) {
           case 0: GetCommand();
