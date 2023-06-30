@@ -6,8 +6,8 @@
 #include "src/program.hpp"
 
 int main() {
-  freopen("testcases/gcd.data", "r", stdin);
-  freopen("lxy.out", "w", stdout);
+//  freopen("testcases/gcd.data", "r", stdin);
+//  freopen("lxy.out", "w", stdout);
   Tomasulo CPU;
   CPU.LoadCommand();
   CPU.run();
