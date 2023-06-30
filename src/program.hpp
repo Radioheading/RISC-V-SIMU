@@ -112,6 +112,7 @@ class Tomasulo {
         // std::cout << "----Fetching!\n";
         // std::cout << i << ' ' << RS.element[i].A << ' ' << RS.element[i].Dest << '\n';
         RS.element_next[i].busy = false;
+        RS.element[i].busy = false;
         ROB.data_next[RS.element[i].Dest].value = RS.element[i].A;
         ROB.data_next[RS.element[i].Dest].ready = true;
       }
@@ -148,6 +149,7 @@ class Tomasulo {
       longType cmd = memory[cur_pc] | memory[cur_pc + 1] << 8 | memory[cur_pc + 2] << 16 | memory[cur_pc + 3] << 24;
 //      std::cout << std::string(Parse(cmd)) << '\n';
       InsQueue.enQueue(Parse(cmd));
+      ins_stall = true;
       // InsQueue.deQueue(); // only for test
     }
   }
@@ -445,9 +447,9 @@ class Tomasulo {
     // std::cout << "-----------committing!" << " considering" << ROB.data.head_id() << "---------\n";
     // std::cout << todo << '\n';
     if (ROB.data.empty() || !ROB.data.head().ready) {
-      // std::cout << "blocked!\n";
-      // std::cout << std::string(ROB.data.head().op) << '\n';
-      // std::cout << ROB.data.head() << '\n';
+//       std::cout << "blocked!\n";
+//       std::cout << std::string(ROB.data.head().op) << '\n';
+//       std::cout << ROB.data.head() << '\n';
 //       for (int i = 0; i < 32; ++i) {
 //         std::cout << i << ' ' << depend[i] << '\n';
 //       }
@@ -539,27 +541,44 @@ class Tomasulo {
   }
 
   void run() {
-    int order[6] = {0, 4, 5, 2, 1, 3};
+    int order[6] = {0, 1, 2, 3, 4, 5};
     while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
       std::random_shuffle(order, order + 6);
+//      for (int i = 0; i < 6; ++i) {
+//        std::cout << order[i] << ' ';
+//      }
+      std::cout << '\n';
       for (int i = 0; i < 6; ++i) {
         switch (order[i]) {
-          case 0: GetCommand();
+          case 0:
+//            std::cout << "----------GetCommand!----------\n";
+            GetCommand();
             break;
-          case 1: Issue();
+          case 1:
+//            std::cout << "----------Issuing!----------\n";
+            Issue();
             break;
-          case 2: Fetch();
+          case 2:
+//            std::cout << "----------Fetching!----------\n";
+            Fetch();
             break;
-          case 3: Update();
+          case 3:
+//            std::cout << "----------Updating!----------\n";
+            Update();
             break;
-          case 4: Commit();
+          case 4:
+//            std::cout << "----------Committing!----------\n";
+            Commit();
             break;
-          case 5: Execute();
+          case 5:
+//            std::cout << "----------Executing!----------\n";
+            Execute();
             break;
         }
       }
+//      std::cout << "----------Flushing!----------\n";
       Flush();
       ++main_clock;
     }
