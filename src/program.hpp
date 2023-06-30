@@ -535,6 +535,7 @@ class Tomasulo {
 
   void run() {
     int order[6] = {3, 5, 2, 4, 0, 1};
+    std::random_shuffle(order, order + 6);
     while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
