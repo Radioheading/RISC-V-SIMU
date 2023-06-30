@@ -136,9 +136,12 @@ class Tomasulo {
 //    std::cout << InsQueue.isFull() << '\n';
 //    std::cout << ins_stall << '\n';
 //    std::cout << JALR_dependency << '\n';
-//    std::cout << cur_pc << '\n';
     if (!InsQueue.isFull() && !ins_stall && JALR_dependency == -1) {
-      // std::cout << "we're at: " << std::hex << cur_pc << '/' << std::dec << cur_pc << '\n';
+//      std::cout << "time: " << main_clock << '\n';
+//      for (int i = 0; i < 32; ++i) {
+//        std::cout << i << ' ' << depend[i] << '\n';
+//      }
+//      std::cout << "we're at: " << std::hex << cur_pc << '/' << std::dec << cur_pc << '\n';
       longType cmd = memory[cur_pc] | memory[cur_pc + 1] << 8 | memory[cur_pc + 2] << 16 | memory[cur_pc + 3] << 24;
       // std::cout << std::string(Parse(cmd)) << '\n';
       InsQueue.enQueue(Parse(cmd));
@@ -272,6 +275,8 @@ class Tomasulo {
           new_rs.type = todo.op.type;
           new_rs.A = todo.op.imm;
           RS.insert(new_rs);
+//          std::cout << "Issuing!\n";
+//          std::cout << new_rs << '\n';
           InsQueue.deQueue();
           ins_stall = false, cur_pc += 4;
           break;
@@ -386,6 +391,9 @@ class Tomasulo {
           SetDepend(todo.dest, ROB.data_next.back_id());
           InsQueue.deQueue();
           ins_stall = false, cur_pc += todo.op.imm;
+//          for (int i = 0; i < 32; ++i) {
+//            std::cout << i << ' ' << depend_nxt[i] << '\n';
+//          }
           break;
         }
         case JALR : {
@@ -444,7 +452,7 @@ class Tomasulo {
     if (todo.commit_type == ChangeReg) {
       // std::cout << "change register!\n";
       WriteReg(todo.dest, todo.value);
-      if (depend[todo.dest] == ROB.data.head_id()) {
+      if (depend_nxt[todo.dest] == ROB.data.head_id()) {
         // std::cout << "really depend!\n";
         // the operation being committed IS the one
         depend_nxt[todo.dest] = -1;
@@ -452,7 +460,7 @@ class Tomasulo {
     } else if (todo.commit_type == ReadMem) {
       // std::cout << "read memory!\n";
       ReadMemory(todo.value, todo.dest);
-      if (depend[todo.dest] == ROB.data.head_id()) {
+      if (depend_nxt[todo.dest] == ROB.data.head_id()) {
         // std::cout << "really depend!\n";
         depend_nxt[todo.dest] = -1;
       }
@@ -489,6 +497,7 @@ class Tomasulo {
     // std::cout << "---------------committing\n";
 //    std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
 //    std::cout << std::string(todo.op) << '\n';
+//    std::cout << todo << '\n';
 //    for (int i = 0; i < 32; ++i) {
 //      std::cout << i << ' ' << reg_nxt[i] << '\n';
 //    }

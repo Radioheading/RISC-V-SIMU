@@ -238,6 +238,8 @@ class ReservationStation {
     }
     if (i == 33) return;
     // todo: check the problem of int/unsigned
+//    std::cout << "RS is running!\n";
+//    std::cout << element[i] << '\n';
     switch (element[i].type) {
       case BEQ: element_next[i].A = ((int) element[i].Vj == (int) element[i].Vk);
         break;
@@ -252,6 +254,8 @@ class ReservationStation {
       case BGEU: element_next[i].A = (element[i].Vj >= element[i].Vk);
         break;
       case ADDI: element_next[i].A = element[i].Vj + element[i].A;
+//        std::cout << "trying to compute!\n";
+//        std::cout << element_next[i].A << ' ' << element[i].Vj <<'\n';
         break;
       case SLTI: element_next[i].A = ((int) element[i].Vj < (int) element[i].A);
         break;
