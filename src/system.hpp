@@ -22,7 +22,7 @@ longType read_from_memory(longType addr, int length, const shortType *mem) {\
   for (longType i = addr; i < addr + length; ++i) {
     a[i - addr] = mem[i];
   }
-  // std::cout << "read_address: " << addr << ", value: " << (a[3] << 24 | a[2] << 16 | a[1] << 8 | a[0]) << '\n';
+//  std::cout << "read_address: " << addr << ", value: " << (a[3] << 24 | a[2] << 16 | a[1] << 8 | a[0]) << '\n';
   return a[3] << 24 | a[2] << 16 | a[1] << 8 | a[0];
 }
 
@@ -87,7 +87,7 @@ class ReOrderBuffer {
   }
 
   void clear() {
-    data_next.clear();
+    data_next.clear(), data.clear();
   }
 
   void print() const {
@@ -122,14 +122,17 @@ class LoadStoreBuffer {
     if (data.empty() || busy) return;
     load_store front = data.head(), &to_change = data_next.head();
     if (front.Qj == -1 && front.Qk == -1) {
-      // std::cout << "LSB is running!\n";
+//      std::cout << "LSB is running!\n";
+//      std::cout << front << '\n';
       busy = true, countdown = 3;
       switch (front.type) {
         case LB: to_change.A = extend(read_from_memory(front.Vj + front.A, 1, mem), 7);
           break;
         case LH: to_change.A = extend(read_from_memory(front.Vj + front.A, 2, mem), 15);
           break;
-        case LW: to_change.A = extend(read_from_memory(front.Vj + front.A, 4, mem), 31);
+        case LW:
+//          std::cout << front.Vj + front.A << '\n';
+          to_change.A = extend(read_from_memory(front.Vj + front.A, 4, mem), 31);
           break;
         case LBU: to_change.A = read_from_memory(front.Vj + front.A, 1, mem);
           break;
@@ -164,7 +167,7 @@ class LoadStoreBuffer {
   }
 
   void clear() {
-    busy = false, countdown = 0, done = false, data_next.clear();
+    busy = false, countdown = 0, done = false, data_next.clear(), data.clear();
   }
 
   void print() const {
@@ -218,6 +221,7 @@ class ReservationStation {
   void clear() {
     for (int i = 1; i < 33; ++i) {
       element_next[i].busy = false;
+      element[i].busy = false;
     }
   }
 

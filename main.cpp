@@ -6,7 +6,9 @@
 #include "src/program.hpp"
 
 int main() {
-//  freopen("testcases/array_test1.data", "r", stdin);
+  std::ios::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+//  freopen("testcases/naive.data", "r", stdin);
 //  freopen("lxy.out", "w", stdout);
   Tomasulo CPU;
   CPU.LoadCommand();

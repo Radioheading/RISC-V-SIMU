@@ -83,15 +83,15 @@ class Tomasulo {
   }
 
   void ReadMemory(longType _value, longType _dest) {
-    // std::cout << "read from memory\n";
-    // std::cout << "dest: " << _dest << ", _value: " << _value << '\n';
+//    std::cout << "read from memory\n";
+//    std::cout << "dest: " << _dest << ", _value: " << _value << '\n';
     WriteReg(_dest, _value);
   }
 
   void WriteMemory(longType _value, const Operation &ins) {
     // introduction: after three cycles, we can write certain value to certain address in the memory
-    // std::cout << "write to memory\n";
-    // std::cout << std::string(ins) << '\n';
+//    std::cout << "write to memory\n";
+//    std::cout << std::string(ins) << '\n';
     switch (ins.type) {
       case SB : write_to_memory(_value, 1, memory, extend(reg[ins.rs2], 7));
         // std::cout << "dest: " << _value << ", _value: " << extend(reg[ins.rs2], 7) << '\n';
@@ -120,8 +120,8 @@ class Tomasulo {
     if (!LSB.data.empty()) {
       auto LSB_first = LSB.data.head();
       if (LSB.done) {
-        // std::cout << "====Fetching from LSB!\n";
-        // std::cout << LSB_first.A << ' ' << LSB_first.Dest << ' ' << LSB_first.LR << '\n';
+//        std::cout << "====Fetching from LSB!\n";
+//        std::cout << LSB_first << '\n';
         if (LSB_first.LR) { // load
           ROB.data_next[LSB_first.Dest].value = LSB_first.A;
           ROB.data_next[LSB_first.Dest].ready = true;
@@ -217,6 +217,8 @@ class Tomasulo {
           new_ls.A = todo.op.imm;
           new_ls.LR = true;
           LSB.data_next.enQueue(new_ls);
+//          std::cout << "launching!\n";
+//          std::cout << new_ls << '\n';
           InsQueue.deQueue();
           ins_stall = false, cur_pc += 4;
           break;
@@ -469,12 +471,14 @@ class Tomasulo {
         depend_nxt[todo.dest] = -1;
       }
       LSB.data_next.deQueue();
+      LSB.data.deQueue();
       LSB.busy = false;
       LSB.done = false;
     } else if (todo.commit_type == WriteMem) {
       // std::cout << "write memory!\n";
       WriteMemory(todo.dest, todo.op);
       LSB.data_next.deQueue();
+      LSB.data.deQueue();
       LSB.busy = false;
       LSB.done = false;
     } else if (todo.commit_type == Branch) {
@@ -502,6 +506,7 @@ class Tomasulo {
 //    std::cout << "we're at: " << std::hex << todo.pc << '/' << std::dec << todo.pc << '\n';
 //    std::cout << std::string(todo.op) << '\n';
 //    std::cout << todo << '\n';
+//    std::cout << "id: " << ROB.data_next.head_id() << '\n';
 //    for (int i = 0; i < 32; ++i) {
 //      std::cout << i << ' ' << reg_nxt[i] << '\n';
 //    }
@@ -534,8 +539,7 @@ class Tomasulo {
   }
 
   void run() {
-    int order[6] = {3, 5, 2, 4, 0, 1};
-    std::random_shuffle(order, order + 6);
+    int order[6] = {0, 4, 5, 2, 1, 3};
     while (true) {
       // std::cout << "-------------------------------\n";
       // std::cout << "---------------" << main_clock << "---------------\n";
