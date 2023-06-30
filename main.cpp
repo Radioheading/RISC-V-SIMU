@@ -8,7 +8,7 @@
 int main() {
   std::ios::sync_with_stdio(false);
   std::cin.tie(nullptr);
-//  freopen("testcases/naive.data", "r", stdin);
+//  freopen("testcases/magic.data", "r", stdin);
 //  freopen("lxy.out", "w", stdout);
   Tomasulo CPU;
   CPU.LoadCommand();

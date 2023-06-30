@@ -309,7 +309,7 @@ class ReservationStation {
 
   void print() const {
     for (int i = 1; i < 33; ++i) {
-      // std::cout << element[i] << '\n';
+      std::cout << element[i] << '\n';
     }
   }
 };

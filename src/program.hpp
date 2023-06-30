@@ -112,7 +112,6 @@ class Tomasulo {
         // std::cout << "----Fetching!\n";
         // std::cout << i << ' ' << RS.element[i].A << ' ' << RS.element[i].Dest << '\n';
         RS.element_next[i].busy = false;
-        RS.element[i].busy = false;
         ROB.data_next[RS.element[i].Dest].value = RS.element[i].A;
         ROB.data_next[RS.element[i].Dest].ready = true;
       }
@@ -219,6 +218,7 @@ class Tomasulo {
           new_ls.A = todo.op.imm;
           new_ls.LR = true;
           LSB.data_next.enQueue(new_ls);
+          LSB.data.enQueue(new_ls);
 //          std::cout << "launching!\n";
 //          std::cout << new_ls << '\n';
           InsQueue.deQueue();
@@ -253,6 +253,7 @@ class Tomasulo {
           new_ls.A = todo.op.imm;
           new_ls.LR = false;
           LSB.data_next.enQueue(new_ls);
+          LSB.data.enQueue(new_ls);
           InsQueue.deQueue();
           ins_stall = false, cur_pc += 4;
           break;
@@ -549,7 +550,7 @@ class Tomasulo {
 //      for (int i = 0; i < 6; ++i) {
 //        std::cout << order[i] << ' ';
 //      }
-      std::cout << '\n';
+//      std::cout << '\n';
       for (int i = 0; i < 6; ++i) {
         switch (order[i]) {
           case 0:
