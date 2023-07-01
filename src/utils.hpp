@@ -6,9 +6,6 @@
 #include <string>
 #include <unordered_map>
 
-using shortType = uint8_t;
-using longType = uint32_t;
-
 enum opType {
   END, LUI, AUIPC, JAL, JALR, BEQ, BNE, BLT,
   BGE, BLTU, BGEU, LB, LH, LW, LBU, LHU, SB,
@@ -60,7 +57,7 @@ std::string change_string(const opType &op) {
   }
 }
 
-std::unordered_map<longType, opType> OperationCode{
+std::unordered_map<unsigned, opType> OperationCode{
     {0b00000000000110111, LUI}, {0b00000000000010111, AUIPC},
     {0b00000000001101111, JAL}, {0b00000000001100111, JALR},
     {0b00000000001100011, BEQ}, {0b00000000011100011, BNE},
@@ -81,7 +78,7 @@ std::unordered_map<longType, opType> OperationCode{
     {0b01000001010110011, SRA}, {0b00000001100110011, OR},
     {0b00000001110110011, AND}};
 
-std::unordered_map<longType, char> BigType = {{0b0110111, 'U'}, {0b0010111, 'U'}, {0b1101111, 'J'},
+std::unordered_map<unsigned, char> BigType = {{0b0110111, 'U'}, {0b0010111, 'U'}, {0b1101111, 'J'},
                                               {0b1100111, 'I'}, {0b1100011, 'B'}, {0b0000011, 'I'},
                                               {0b0100011, 'S'}, {0b0010011, 'I'}, {0b0110011, 'R'}};
 
@@ -93,7 +90,7 @@ std::unordered_map<opType, char>
                  {SUB, 'R'}, {SLL, 'R'}, {SLT, 'R'}, {SLTU, 'R'}, {XOR, 'R'}, {SRL, 'R'}, {SRA, 'R'}, {OR, 'R'},
                  {AND, 'R'}};
 
-longType getSub(longType todo, int r, int l) {
+unsigned getSub(unsigned todo, int r, int l) {
   return (todo >> l) & ((1u << (r - l + 1)) - 1u);
 }
 
@@ -104,7 +101,7 @@ unsigned extend(unsigned todo, int num) {
 struct Operation {
   opType type{};
   int imm{};
-  shortType rs2{}, rs1{}, rd{}, shamt{};
+  uint8_t rs2{}, rs1{}, rd{}, shamt{};
 
   explicit operator std::string() const {
     return "type: " + change_string(type) + ", imm: " + std::to_string((int)imm) + '\n'
@@ -113,13 +110,13 @@ struct Operation {
   }
 };
 
-Operation Parse(longType command) {
+Operation Parse(unsigned command) {
   Operation ret;
   if (command == 0x0ff00513) {
     ret.type = END;
     return ret;
   }
-  longType general_type = getSub(command, 6, 0), p1{}, p2{};
+  unsigned general_type = getSub(command, 6, 0), p1{}, p2{};
   char big_type = BigType[general_type];
   // p1 is the 14 to 12 digit, p2 is the 31 to 25 digit
   if (big_type == 'U' || big_type == 'J') {
