@@ -341,11 +341,11 @@ class Tomasulo {
             ins_stall = true;
             break;
           }
-//          bool my_guess = my_predict.predict(cur_pc);
-//          if (my_guess) {
-//            cur_pc += todo.op.imm - 4;
-//          }
-//          todo.judge = my_guess;
+          bool my_guess = my_predict.predict(cur_pc);
+          if (my_guess) {
+            cur_pc += todo.op.imm - 4;
+          }
+          todo.judge = my_guess;
           todo.commit_type = Branch;
           todo.dest = cur_pc + todo.op.imm;
           new_rs.Qj = GetDependency(todo.op.rs1), new_rs.Qk = GetDependency(todo.op.rs2);
@@ -366,8 +366,7 @@ class Tomasulo {
           new_rs.type = todo.op.type;
           RS.insert(new_rs);
           InsQueue.deQueue();
-          ins_stall = true;
-          // ins_stall = false, cur_pc += 4;
+          ins_stall = false, cur_pc += 4;
           break;
         }
         case JAL : {
@@ -444,31 +443,25 @@ class Tomasulo {
       LSB.done = false;
     } else if (todo.commit_type == Branch) {
       bool guess = todo.judge, real = todo.value;
-//      my_predict.flush(todo.pc, real);
-//      ++attempt;
-//      if (guess != real) {
-//        ROB.clear(), RS.clear(), LSB.clear(), InsQueue.clear(), ins_stall = false;
-//        EraseDependency();
-//        JALR_dependency = -1;
-//        if (real) {
-//          cur_pc = todo.dest;
-//        } else {
-//          cur_pc = todo.pc + 4;
-//        }
-//      } else {
-//        ++success;
-//      }
-      if (real) {
-        cur_pc = todo.dest;
+      my_predict.flush(todo.pc, real);
+      ++attempt;
+      if (guess != real) {
+        ROB.clear(), RS.clear(), LSB.clear(), InsQueue.clear(), ins_stall = false;
+        EraseDependency();
+        JALR_dependency = -1;
+        if (real) {
+          cur_pc = todo.dest;
+        } else {
+          cur_pc = todo.pc + 4;
+        }
       } else {
-        cur_pc = todo.pc + 4;
+        ++success;
       }
-      ins_stall = false;
     } else if (todo.commit_type == End) {
       std::cout << int(reg[10] & 255u) << '\n';
 //      std::cout << attempt << ' ' << success << '\n';
 //      std::cout << std::fixed << std::setprecision(5) << PredictionAccurancy() << '\n';
-//      std::cout << "clocks: " << main_clock << '\n';
+      std::cout << "clocks: " << main_clock << '\n';
       exit(0);
     }
     if (!ROB.data_next.empty()) {
