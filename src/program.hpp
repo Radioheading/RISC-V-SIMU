@@ -461,7 +461,7 @@ class Tomasulo {
       std::cout << int(reg[10] & 255u) << '\n';
 //      std::cout << attempt << ' ' << success << '\n';
 //      std::cout << std::fixed << std::setprecision(5) << PredictionAccurancy() << '\n';
-      std::cout << "clocks: " << main_clock << '\n';
+//      std::cout << "clocks: " << main_clock << '\n';
       exit(0);
     }
     if (!ROB.data_next.empty()) {
