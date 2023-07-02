@@ -10,7 +10,7 @@
 
 使用 Tomasulo 算法模拟 CPU 执行指令。设计的电路图如下：
 
-![structure](\\wsl.localhost\Ubuntu\home\brucelee\PPCA\RISC-V-SIMU\structure.jpg)
+![structure](structure.jpg)
 
 ## 分支预测
 
