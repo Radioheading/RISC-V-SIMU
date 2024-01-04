@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 enum opType {
-  END, LUI, AUIPC, JAL, JALR, BEQ, BNE, BLT,
+  LUI, AUIPC, JAL, JALR, BEQ, BNE, BLT,
   BGE, BLTU, BGEU, LB, LH, LW, LBU, LHU, SB,
   SH, SW, ADDI, SLTI, SLTIU, XORI, ORI, ANDI,
   SLLI, SRLI, SRAI, ADD, SUB, SLL, SLT, SLTU,
@@ -16,7 +16,6 @@ enum opType {
 
 std::string change_string(const opType &op) {
   switch (op) {
-    case END: return "END";
     case LUI: return "LUI";
     case AUIPC: return "AUIPC";
     case JAL: return "JAL";
@@ -112,10 +111,6 @@ struct Operation {
 
 Operation Parse(unsigned command) {
   Operation ret;
-  if (command == 0x0ff00513) {
-    ret.type = END;
-    return ret;
-  }
   unsigned general_type = getSub(command, 6, 0), p1{}, p2{};
   char big_type = BigType[general_type];
   // p1 is the 14 to 12 digit, p2 is the 31 to 25 digit

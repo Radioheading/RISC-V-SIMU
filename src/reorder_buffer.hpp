@@ -4,7 +4,7 @@
 #include "utils.hpp"
 
 enum CommitType {
-  ChangeReg, ReadMem, WriteMem, Branch, End
+  ChangeReg, ReadMem, WriteMem, Branch
 };
 
 std::string change_string(const CommitType &type) {
@@ -13,7 +13,6 @@ std::string change_string(const CommitType &type) {
     case ReadMem : return "ReadMem";
     case WriteMem : return "WriteMem";
     case Branch : return "Branch";
-    case End : return "End";
   }
 }
 

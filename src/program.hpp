@@ -23,12 +23,16 @@ class Tomasulo {
   ReservationStation RS;
   LoadStoreBuffer LSB;
   unsigned cur_pc{0}, attempt{0}, success{0};
-  unsigned main_clock{0};
+  unsigned long long main_clock{0};
   Predictor my_predict;
   bool ins_stall{false};
 
   void WriteReg(int _dest, int _value) {
     if (_dest) {
+      if (main_clock < 5e4) {
+//        std::cout << "clk: " << main_clock << '\n';
+        std::cout << "RF: " << _dest << "\t<=\t" << _value << '\n';
+      }
       reg_nxt[_dest] = _value;
     }
   }
@@ -83,7 +87,7 @@ class Tomasulo {
   void EraseDependency() {
     for (int i = 0; i < 32; ++i) {
       depend_nxt[i] = -1;
-      depend[i] = -1;
+      depend[i] = -1; // problem exists, need to have another tag
     }
   }
 
@@ -145,13 +149,6 @@ class Tomasulo {
     if (!ROB.isFull() && !InsQueue.empty()) { // only issue when RS/LSB and ROB are both available
       todo.op = InsQueue.head(), todo.ready = false, todo.pc = cur_pc;
       switch (todo.op.type) {
-        case END : {
-          todo.ready = true;
-          todo.commit_type = End;
-          ROB.insert(todo);
-          ins_stall = true, cur_pc += 4;
-          break;
-        }
         case LUI : {
           todo.value = todo.op.imm;
           todo.ready = true;
@@ -419,6 +416,8 @@ class Tomasulo {
       return;
     }
     reorder_buffer_info todo = ROB.data.head();
+//    std::cout << todo << '\n';
+//    std::cout << std::hex << todo.pc << '\n';
     if (todo.commit_type == ChangeReg) {// change register
       WriteReg(todo.dest, todo.value);
       if (depend_nxt[todo.dest] == ROB.data.head_id()) {
@@ -448,6 +447,7 @@ class Tomasulo {
       if (guess != real) {
         ROB.clear(), RS.clear(), LSB.clear(), InsQueue.clear(), ins_stall = false;
         EraseDependency();
+
         JALR_dependency = -1;
         if (real) {
           cur_pc = todo.dest;
@@ -457,12 +457,6 @@ class Tomasulo {
       } else {
         ++success;
       }
-    } else if (todo.commit_type == End) {
-      std::cout << int(reg[10] & 255u) << '\n';
-//      std::cout << attempt << ' ' << success << '\n';
-//      std::cout << std::fixed << std::setprecision(5) << PredictionAccurancy() << '\n';
-//      std::cout << "clocks: " << main_clock << '\n';
-      exit(0);
     }
     if (!ROB.data_next.empty()) {
       ROB.data_next.deQueue();
@@ -494,7 +488,11 @@ class Tomasulo {
   void run() {
     int order[6] = {0, 1, 2, 3, 4, 5};
     while (true) {
-      std::random_shuffle(order, order + 6);
+//      std::cerr << "clk_cnt: " << main_clock << '\n';
+//      std::random_shuffle(order, order + 6);
+      if (!(main_clock % 1000000)) {
+        std::cerr << "main_clock: " << main_clock << '\n';
+      }
       for (int i = 0; i < 6; ++i) {
         switch (order[i]) {
           case 0:GetCommand();
